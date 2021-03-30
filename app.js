@@ -21,6 +21,30 @@ app.get('/api/v1/tours', (req, res) => {
     })
 })
 
+// GET REQUEST DENGAN ID
+app.get('/api/v1/tours/:id', (req, res) => {
+
+    // Merubah ID dari string ke number
+    const id = req.params.id * 1
+
+    if (id > tours.length) {
+        return res.status(404).json({
+            status: 'fail',
+            message: 'Invalid ID'
+        })
+    }
+
+    // Query ke data collections
+    const tour = tours.find(el => el.id === id)
+
+    res.status(200).json({
+        status: 'success',
+        data: {
+            tour
+        }
+    })
+})
+
 // POST REQUEST
 app.post('/api/v1/tours', (req, res) => {
     // console.log(req.body)
