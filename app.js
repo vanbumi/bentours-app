@@ -12,64 +12,60 @@ app.get('/', (req, res) => {
 
 const tours = JSON.parse(fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`))
 
-// GET REQUREST
-app.get('/api/v1/tours', (req, res) => {
-    res.status(200).json({
-        status: 'success',
-        result: tours.length,
-        data: {tours}
-    })
-})
+const getAllTours = (req, res) => {
+  res.status(200).json({
+      status: 'success',
+      result: tours.length,
+      data: {tours}
+  })
+}
 
-// GET REQUEST DENGAN ID
-app.get('/api/v1/tours/:id', (req, res) => {
+const getTour = (req, res) => {
 
-    // Merubah ID dari string ke number
-    const id = req.params.id * 1
+  // Merubah ID dari string ke number
+  const id = req.params.id * 1
 
-    if (id > tours.length) {
-        return res.status(404).json({
-            status: 'fail',
-            message: 'Invalid ID'
-        })
-    }
-
-    // Query ke data collections
-    const tour = tours.find(el => el.id === id)
-
-    res.status(200).json({
-        status: 'success',
-        data: {
-            tour
-        }
-    })
-})
-
-// POST REQUEST
-app.post('/api/v1/tours', (req, res) => {
-
-    // menambakan ID
-  const newId = tours[tours.length -1].id + 1;
-  const newTour = Object.assign({id: newId}, req.body);
-
-  tours.push(newTour);
-  
-  fs.writeFile(
-    `${__dirname}/dev-data/data/tours-simple.json`,
-    JSON.stringify(tours),
-    err => {
-      res.status(201).json({
-        status: 'success',
-        data: {
-          tour: newTour
-        }
+  if (id > tours.length) {
+      return res.status(404).json({
+          status: 'fail',
+          message: 'Invalid ID'
       })
-    }
-  )
-})
+  }
 
-// PATCH REQUEST
-app.patch('/api/v1/tours/:id', (req, res) => {
+  // Query ke data collections
+  const tour = tours.find(el => el.id === id)
+
+  res.status(200).json({
+      status: 'success',
+      data: {
+          tour
+      }
+  })
+}
+
+const createTour = (req, res) => {
+
+  // menambakan ID
+const newId = tours[tours.length -1].id + 1;
+const newTour = Object.assign({id: newId}, req.body);
+
+tours.push(newTour);
+
+fs.writeFile(
+  `${__dirname}/dev-data/data/tours-simple.json`,
+  JSON.stringify(tours),
+  err => {
+    res.status(201).json({
+      status: 'success',
+      data: {
+        tour: newTour
+      }
+    })
+  }
+)
+}
+
+const updateTour = (req, res) => {
   if (req.params.id * 1 > tours.length) {
     return res.status(404).json({
       status: 'fail',
@@ -83,10 +79,9 @@ app.patch('/api/v1/tours/:id', (req, res) => {
       tour: '<Updated tour here....>'
     }
   })
-})
+}
 
-// DELETE REQUEST
-app.delete('/api/v1/tours/:id', (req, res) => {
+const deleteTour = (req, res) => {
   if (req.params.id * 1 > tours.length) {
     return res.status(404).json({
       status: 'fail',
@@ -98,7 +93,29 @@ app.delete('/api/v1/tours/:id', (req, res) => {
     status: 'success',
     data: null
   })
-})
+}
+
+// GET REQUREST (GET ALL TOURS)
+//app.get('/api/v1/tours', getAllTours)
+// GET REQUEST DENGAN ID
+//app.get('/api/v1/tours/:id', getTour)
+// POST REQUEST
+//app.post('/api/v1/tours', createTour)
+// PATCH REQUEST
+//app.patch('/api/v1/tours/:id', updateTour)
+// DELETE REQUEST
+//app.delete('/api/v1/tours/:id', deleteTour)
+
+// SEMUA DI ATAS BISA DI REFACTOR SEPERTI DIBAWAH INI
+app
+  .route('/api/v1/tours')
+  .get(getAllTours)
+  .post(createTour)
+
+app.route('/api/v1/tours/:id')
+  .get(getTour)
+  .patch(updateTour)
+  .delete(deleteTour)
 
 
 // SETUP SERVER
