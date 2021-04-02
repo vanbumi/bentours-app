@@ -1,17 +1,24 @@
 const express = require('express')
 const fs = require('fs')
+const morgan = require('morgan')
 
 const app = express()
 
-// Add middleware
+// (1) MIDDLEWARES
+
+app.use(morgan('dev'))
 app.use(express.json())
 
+// CREATE INDEX PAGE
 app.get('/', (req, res) => {
     res.send('Welcome to Ben Tours!')
 })
 
+// MEMBACA DATA DARI FOLDER
 const tours = JSON.parse(fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`))
 
+
+// (2) ROUTE HANDLER
 const getAllTours = (req, res) => {
   res.status(200).json({
       status: 'success',
@@ -95,30 +102,70 @@ const deleteTour = (req, res) => {
   })
 }
 
-// GET REQUREST (GET ALL TOURS)
-//app.get('/api/v1/tours', getAllTours)
-// GET REQUEST DENGAN ID
-//app.get('/api/v1/tours/:id', getTour)
-// POST REQUEST
-//app.post('/api/v1/tours', createTour)
-// PATCH REQUEST
-//app.patch('/api/v1/tours/:id', updateTour)
-// DELETE REQUEST
-//app.delete('/api/v1/tours/:id', deleteTour)
+// Users Request
+const getAllUsers = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'This route is not defined yet!'
+  })
+}
+
+const getUser = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'This route is not defined yet!'
+  })
+}
+
+const createUser = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'This route is not defined yet!'
+  })
+}
+
+const updateUser = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'This route is not defined yet!'
+  })
+}
+
+const deleteUser = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'This route is not defined yet!'
+  })
+}
 
 // SEMUA DI ATAS BISA DI REFACTOR SEPERTI DIBAWAH INI
+// (3) ROUTES
 app
   .route('/api/v1/tours')
   .get(getAllTours)
   .post(createTour)
 
-app.route('/api/v1/tours/:id')
+app
+  .route('/api/v1/tours/:id')
   .get(getTour)
   .patch(updateTour)
   .delete(deleteTour)
 
+// Users Routes
+app
+  .route('/api/v1/users')
+  .get(getAllUsers)
+  .post(createUser)
+  
+app
+  .route('/api/v1/users/:id')
+  .get(getUser)
+  .patch(updateUser)
+  .delete(deleteUser)
 
-// SETUP SERVER
+
+
+// (4) START SERVER
 const PORT = process.env.PORT || 3000
 app.listen(PORT, () => {
     console.log(`Server berjalan di port ${PORT}...`)
